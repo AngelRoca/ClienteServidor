@@ -164,4 +164,5 @@ public class ServidorGui extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     public Servidor serv;
     private ServidorGui sg=this;
+    private int j;
 }
