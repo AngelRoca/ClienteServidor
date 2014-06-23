@@ -15,9 +15,12 @@ public class Cliente extends Thread{
     private DataOutputStream out;
     private ClienteGui vent;
     private boolean cerrar=false;
+    public String nick;
     
-    public Cliente(int port,ClienteGui ven){
+    public Cliente(int port,ClienteGui ven,String nick){
         vent=ven;
+        this.nick=nick;
+        
         try{
             socket=new Socket("localhost",port);
             in1=socket.getInputStream();
@@ -26,7 +29,7 @@ public class Cliente extends Thread{
             out=new DataOutputStream(out1);
             
             this.start();
-            out.writeUTF("hola servidor");
+            out.writeUTF(nick);
             out.flush();
             
         }catch(Exception e){}
@@ -47,9 +50,6 @@ public class Cliente extends Thread{
         try{
         cerrar=true;
         vent.addText("Hasta luego");
-        out.writeUTF("Log out");
-        out.flush();
-        
         in.close();
         out.close();
         socket.close();

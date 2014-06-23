@@ -57,6 +57,8 @@ class hiloCliente extends Thread{
     private DataOutputStream out;
     private final hiloCliente[] hilos;
     private int max;
+    private String nick;
+    private String[] ip;
     
     public hiloCliente(Socket cliente,hiloCliente[] hilo){
         client=cliente;
@@ -72,19 +74,36 @@ class hiloCliente extends Thread{
             out=new DataOutputStream(out1);
             String str;
             
-            SocketAddress ip=client.getRemoteSocketAddress();
+            nick=in.readUTF();
+            ip=client.getInetAddress().toString().split("/");
             
-            System.out.println(in.readUTF());
-            out.writeUTF("Bienvenido al chat seras identificado por tu ip: "+ip);
+            
+            out.writeUTF("Bienvenido al chat "+nick+"("+ip[1]+")");
+            
+            for(int i=0;i<hilos.length;i++){
+                if(hilos[i] != null && hilos[i] != this){
+                    hilos[i].out.writeUTF("*** "+nick+"("+ip[1]+") se ha unido a la conversacion***");
+                }
+            }
+            
             while(true){
                 str=in.readUTF();
                 for(int i=0;i<max;i++){
                     if(hilos[i]!=null){
-                    hilos[i].out.writeUTF(str);
+                    hilos[i].out.writeUTF("*** "+nick+"("+ip[1]+"):\n"+str+"\n");
                     hilos[i].out.flush();
                     }
                 }
             }
-        }catch(Exception e){System.out.println("el error es "+e);}
+            
+        }catch(Exception e){
+            try{
+            for(int i=0;i<hilos.length;i++){
+                if(hilos[i] != null && hilos[i] != this){
+                    hilos[i].out.writeUTF("*** "+nick+" ha dejado la conversacion***");
+                }
+            }
+            }catch(Exception f){}
+        }
     }
 }
